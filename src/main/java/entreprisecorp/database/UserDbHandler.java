@@ -44,23 +44,24 @@ public class UserDbHandler extends DbHandler{
             String sql = "INSERT INTO " + USER_TABLE_NAME + "(`" + USER_DB_USERNAME + "`, `" + USER_DB_PASSWORD + "`, `"
             + USER_DB_PASSWORD_SALT + "`, `" + USER_DB_EMAIL + "`) VALUES (?, ?, ?, ?)";
 
-            // Hash user password by generating salt 
-            String salt = HashUtils.getSalt(30);
-            String hashedPassword = HashUtils.generateSecurePassword(u.getPassword(), salt);
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                // Hash user password by generating salt 
+                String salt = HashUtils.getSalt(30);
+                String hashedPassword = HashUtils.generateSecurePassword(u.getPassword(), salt);
 
-            // Prepare SQL query
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, u.getUsername());
-            statement.setString(2, hashedPassword);
-            statement.setString(3, salt);
-            statement.setString(4, u.getEmail());
+                // Prepare SQL query
+                statement.setString(1, u.getUsername());
+                statement.setString(2, hashedPassword);
+                statement.setString(3, salt);
+                statement.setString(4, u.getEmail());
 
-            int result = statement.executeUpdate();
-            if (result > 0) {
-                System.out.println("A new user was inserted successfully!");
-                return true;
-            } else {
-                return false;
+                int result = statement.executeUpdate();
+                if (result > 0) {
+                    System.out.println("A new user was inserted successfully!");
+                    return true;
+                } else {
+                    return false;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,11 +76,9 @@ public class UserDbHandler extends DbHandler{
      * @return
      */
     public boolean updateUser(User u) {
-        try {
-            String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=? WHERE " + USER_DB_EMAIL + "=?";
-
+        String sql = "UPDATE " + USER_TABLE_NAME + " SET " + USER_DB_USERNAME + "=? WHERE " + USER_DB_EMAIL + "=?";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
             // Prepare SQL query
-            PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, u.getUsername());
             statement.setString(2, u.getEmail()); // where clause
 

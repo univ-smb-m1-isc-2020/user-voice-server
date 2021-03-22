@@ -25,8 +25,8 @@ public class ELOHandler {
 
     public double calculateProb(Feature feature1, Feature feature2){
 
-        double pow = (feature2.getELO() - feature1.getELO()) / 400;
-        double prob = 1/(1 + (Math.pow(10,pow)));
+        double pow = (feature2.getELO() - feature1.getELO()) / 400.0;
+        double prob = 1.0 / (1.0 + (Math.pow(10,pow)));
 
         return prob;
 

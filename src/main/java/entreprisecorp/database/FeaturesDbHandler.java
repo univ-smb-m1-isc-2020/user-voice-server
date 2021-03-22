@@ -47,13 +47,10 @@ public class FeaturesDbHandler extends DbHandler {
      * @return
      */
     public boolean CreateFeature(Feature feature, String nameTable){
-        try {
-            String sql = "INSERT INTO " + nameTable + " (`" + FEATURE_DB_TEXTFEATURE + "`, `" + FEATURE_DB_ELO + "`, `"
-                    + FEATURE_DB_AUTHOR + "`) VALUES (?, ?, ?)";
-
-
-            // Prepare SQL query
-            PreparedStatement statement = conn.prepareStatement(sql);
+        String sql = "INSERT INTO " + nameTable + " (`" + FEATURE_DB_TEXTFEATURE + "`, `" + FEATURE_DB_ELO + "`, `"
+                + FEATURE_DB_AUTHOR + "`) VALUES (?, ?, ?)";
+                
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {            // Prepare SQL query
             statement.setString(1, feature.getTextFeature());
             statement.setInt(2, feature.getELO());
             statement.setString(3, feature.getAuthorEmail());
@@ -139,11 +136,9 @@ public class FeaturesDbHandler extends DbHandler {
 
 
     public boolean updateFeature(Feature feature, String nameTable) {
-        try {
-            String sql = "UPDATE " + nameTable + " SET " + FEATURE_DB_ELO + "=? WHERE " + FEATURE_DB_TEXTFEATURE + "=?";
-
+        String sql = "UPDATE " + nameTable + " SET " + FEATURE_DB_ELO + "=? WHERE " + FEATURE_DB_TEXTFEATURE + "=?";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
             // Prepare SQL query
-            PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, feature.getELO());
             statement.setString(2, feature.getTextFeature()); // where clause
 

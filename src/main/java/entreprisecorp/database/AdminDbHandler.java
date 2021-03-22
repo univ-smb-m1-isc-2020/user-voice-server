@@ -31,7 +31,8 @@ public class AdminDbHandler extends DbHandler{
             // Check if the user already have an account registered with his email
             String check_existing_request = "SELECT * FROM " + ADMIN_TABLE_NAME + " WHERE `" + ADMIN_DB_EMAIL + "`='" + admin.getEmail() + "'";
             try(Statement st = conn.createStatement();
-                ResultSet rs = st.executeQuery(check_existing_request)){
+                ResultSet rs = st.executeQuery(check_existing_request);
+            ){
                 if(rs.next()) {
                     System.out.println("Error: User already exists !");
                     return false;
@@ -41,32 +42,35 @@ public class AdminDbHandler extends DbHandler{
             String sql = "INSERT INTO " + ADMIN_TABLE_NAME + "(`" + ADMIN_DB_USERNAME + "`, `" + ADMIN_DB_PASSWORD + "`, `"
                     + ADMIN_DB_PASSWORD_SALT + "`, `" + ADMIN_DB_EMAIL + "`, `" + ADMIN_DB_APIKEY + "`, `" + ADMIN_DB_TABLE_NAME_FEATURES + "`) VALUES (?, ?, ?, ?, ?, ?)";
 
-            // Hash user password by generating salt
-            String salt = HashUtils.getSalt(30);
-            String hashedPassword = HashUtils.generateSecurePassword(admin.getPassword(), salt);
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                // Hash user password by generating salt
+                String salt = HashUtils.getSalt(30);
+                String hashedPassword = HashUtils.generateSecurePassword(admin.getPassword(), salt);
 
-            // Prepare SQL query
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, admin.getCompany());
-            statement.setString(2, hashedPassword);
-            statement.setString(3, salt);
-            statement.setString(4, admin.getEmail());
-            statement.setString(5, admin.getApiKey());
-            statement.setString(6, admin.getTableFeatures());
+                // Prepare SQL query
+                statement.setString(1, admin.getCompany());
+                statement.setString(2, hashedPassword);
+                statement.setString(3, salt);
+                statement.setString(4, admin.getEmail());
+                statement.setString(5, admin.getApiKey());
+                statement.setString(6, admin.getTableFeatures());
 
-            int result = statement.executeUpdate();
-            if (result > 0) {
-                System.out.println("A new admin was inserted successfully!");
+                int result = statement.executeUpdate();
+                if (result > 0) {
+                    System.out.println("A new admin was inserted successfully!");
 
-                //Create features Table
-                App.featuresDbHandler.CreateTable(admin.getTableFeatures());
-                return true;
-            } else {
-                return false;
+                    //Create features Table
+                    App.featuresDbHandler.CreateTable(admin.getTableFeatures());
+                    return true;
+                } else {
+                    return false;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            
         }
     }
 
