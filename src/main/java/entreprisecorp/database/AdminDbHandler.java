@@ -1,14 +1,13 @@
 package entreprisecorp.database;
 
-import entreprisecorp.App;
-import entreprisecorp.restservices.models.Admin;
-import entreprisecorp.restservices.models.User;
-import entreprisecorp.utils.HashUtils;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import entreprisecorp.App;
+import entreprisecorp.restservices.models.Admin;
+import entreprisecorp.utils.HashUtils;
 
 public class AdminDbHandler extends DbHandler{
 

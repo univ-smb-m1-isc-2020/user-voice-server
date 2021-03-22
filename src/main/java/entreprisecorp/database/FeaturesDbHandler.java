@@ -1,14 +1,13 @@
 package entreprisecorp.database;
 
-import entreprisecorp.restservices.models.User;
-import entreprisecorp.restservices.models.features.Feature;
-import entreprisecorp.restservices.models.features.ListFeatures;
-import entreprisecorp.restservices.models.features.MatchFeatures;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import entreprisecorp.restservices.models.features.Feature;
+import entreprisecorp.restservices.models.features.ListFeatures;
+import entreprisecorp.restservices.models.features.MatchFeatures;
 
 public class FeaturesDbHandler extends DbHandler {
 

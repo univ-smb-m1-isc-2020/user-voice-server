@@ -1,10 +1,12 @@
 package entreprisecorp.database;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import entreprisecorp.restservices.models.User;
 import entreprisecorp.utils.HashUtils;
-import io.github.cdimascio.dotenv.Dotenv;
 
 public class UserDbHandler extends DbHandler{
 

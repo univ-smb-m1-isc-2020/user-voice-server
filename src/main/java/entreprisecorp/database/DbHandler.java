@@ -4,9 +4,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 public abstract class DbHandler {
-
-    private final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-
     protected String DB_URL;
     protected String DB_USERNAME;
     protected String DB_PASSWORD;

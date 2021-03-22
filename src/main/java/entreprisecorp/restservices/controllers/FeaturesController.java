@@ -1,22 +1,21 @@
 package entreprisecorp.restservices.controllers;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.google.gson.Gson;
-import entreprisecorp.App;
-import entreprisecorp.restservices.Response;
-import entreprisecorp.restservices.ResponseSuccess;
-import entreprisecorp.restservices.models.ApiKey;
-import entreprisecorp.restservices.models.User;
-import entreprisecorp.restservices.models.features.FeatureAndTableName;
-import entreprisecorp.restservices.models.features.FeatureWithApiKey;
-import entreprisecorp.restservices.models.features.ListFeatures;
-import entreprisecorp.restservices.models.features.MatchFeatures;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.json.JsonObject;
-import java.util.concurrent.atomic.AtomicLong;
+import entreprisecorp.App;
+import entreprisecorp.restservices.ResponseSuccess;
+import entreprisecorp.restservices.models.ApiKey;
+import entreprisecorp.restservices.models.features.FeatureAndTableName;
+import entreprisecorp.restservices.models.features.FeatureWithApiKey;
+import entreprisecorp.restservices.models.features.ListFeatures;
+import entreprisecorp.restservices.models.features.MatchFeatures;
 
 @RestController
 public class FeaturesController {

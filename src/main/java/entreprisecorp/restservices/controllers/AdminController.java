@@ -1,16 +1,17 @@
 package entreprisecorp.restservices.controllers;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.google.gson.Gson;
-import entreprisecorp.App;
-import entreprisecorp.restservices.Response;
-import entreprisecorp.restservices.ResponseSuccess;
-import entreprisecorp.restservices.models.Admin;
-import entreprisecorp.restservices.models.User;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.atomic.AtomicLong;
+import entreprisecorp.App;
+import entreprisecorp.restservices.Response;
+import entreprisecorp.restservices.ResponseSuccess;
+import entreprisecorp.restservices.models.Admin;
 
 @RestController
 public class AdminController {
