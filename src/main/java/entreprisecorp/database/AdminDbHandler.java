@@ -1,8 +1,7 @@
 package entreprisecorp.database;
 
 import entreprisecorp.App;
-import entreprisecorp.restservices.models.Admin;
-import entreprisecorp.restservices.models.User;
+import entreprisecorp.restservices.models.admin.Admin;
 import entreprisecorp.utils.HashUtils;
 
 import java.sql.PreparedStatement;
@@ -93,36 +92,6 @@ public class AdminDbHandler extends DbHandler{
         return null;
     }
 
-    /**
-     * Return admin info if password matches
-     * @param email
-     * @param password
-     * @return
-     */
-    public Admin connectAdmin(String email, String password) {
-        String sql = "SELECT * FROM " + ADMIN_TABLE_NAME + " WHERE `" + ADMIN_DB_EMAIL + "`='" + email + "'";
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            if (rs.next()) {
-                // Check password validity
-                if (HashUtils.verifyUserPassword(password, rs.getString(3), rs.getString(4))) {
-                    System.out.println("Admin successfully logged in!");
-                    Admin admin = new Admin();
-                    admin.setDbId(rs.getInt(1));
-                    admin.setCompany(rs.getString(2));
-                    admin.setEmail(rs.getString(5));
-                    admin.setApiKey(rs.getString(6));
-                    admin.setTableFeatures(rs.getString(7));
-
-                    return admin;
-                }
-            }
-            System.out.println("Admin not recognized!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 
     public String getTableNameFromApiKey(String apiKey){

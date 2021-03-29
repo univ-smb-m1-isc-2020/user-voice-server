@@ -1,12 +1,21 @@
-package entreprisecorp.restservices.models;
+package entreprisecorp.restservices.models.admin;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
+@Entity
+@Table(name = "Admins")
 public class Admin {
 
+    @Id
+    @GeneratedValue
     private int dbId;
     private String company;
     private String password;
+    private String salt;
     private String email;
     private String apiKey;
     private String tableFeatures;
@@ -28,10 +37,17 @@ public class Admin {
         this.tableFeatures = this.company + "features";
     }
 
-    public Admin() {
+    protected Admin() {
     }
 
 
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 
     public int getDbId() {
         return dbId;

@@ -2,18 +2,28 @@ package entreprisecorp.restservices.controllers;
 
 import com.google.gson.Gson;
 import entreprisecorp.App;
+import entreprisecorp.restservices.models.admin.AdminRepository;
+import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.restservices.Response;
 import entreprisecorp.restservices.ResponseSuccess;
-import entreprisecorp.restservices.models.Admin;
-import entreprisecorp.restservices.models.User;
+import entreprisecorp.restservices.models.admin.Admin;
+import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class AdminController {
+
+    private final AdminRepository repository;
+
+    public AdminController(AdminRepository repository) {
+        this.repository = repository;
+    }
+
     private final AtomicLong counter = new AtomicLong();
 
     @PostMapping(
@@ -23,7 +33,7 @@ public class AdminController {
     )
     public Response login(@RequestBody Admin admin)
     {
-        Admin connectedAdmin = App.adminDbHandler.connectAdmin(admin.getEmail(), admin.getPassword());
+        Admin connectedAdmin = repository.findByEmailAndPassword(admin.getEmail(),admin.getPassword());
         if(connectedAdmin != null){
             Gson gson = new Gson();
             String adminJson = gson.toJson(connectedAdmin);
@@ -41,16 +51,21 @@ public class AdminController {
     public ResponseSuccess register(@RequestBody Admin admin)
     {
         Admin createdAdmin = new Admin(admin.getCompany(), admin.getPassword(), admin.getEmail());
-        boolean success = App.adminDbHandler.insertAdmin(createdAdmin);
-        if(success){
+
+        createdAdmin.setSalt(HashUtils.getSalt(30));
+        createdAdmin.setPassword(HashUtils.generateSecurePassword(admin.getPassword(), createdAdmin.getSalt()));
+
+        try{
+            repository.save(createdAdmin);
             System.err.println("Admin registration done!");
             createdAdmin.setPassword(null);
             Gson gson = new Gson();
             String adminJson = gson.toJson(createdAdmin);
-            return new ResponseSuccess(counter.incrementAndGet(), adminJson, success);
-        } else {
+            return new ResponseSuccess(counter.incrementAndGet(), adminJson, true);
+        }
+        catch (Exception exception){
             System.err.println("Admin registration failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "", success);
+            return new ResponseSuccess(counter.incrementAndGet(), "", false);
         }
     }
 

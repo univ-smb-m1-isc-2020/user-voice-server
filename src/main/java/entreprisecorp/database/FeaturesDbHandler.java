@@ -1,6 +1,5 @@
 package entreprisecorp.database;
 
-import entreprisecorp.restservices.models.User;
 import entreprisecorp.restservices.models.features.Feature;
 import entreprisecorp.restservices.models.features.ListFeatures;
 import entreprisecorp.restservices.models.features.MatchFeatures;

@@ -1,11 +1,22 @@
 package entreprisecorp.restservices.models.features;
 
+import org.springframework.test.annotation.IfProfileValue;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Feature {
+
+    @Id
+    @GeneratedValue
     private int id;
     private String textFeature;
     private int ELO = 0;
     private String authorEmail;
     private boolean won;
+    private String tableName;
 
     public Feature(int id, String textFeature, int ELO,String authorEmail) {
         this.id = id;
@@ -70,6 +81,14 @@ public class Feature {
 
     public void setWon(boolean won) {
         this.won = won;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     @Override

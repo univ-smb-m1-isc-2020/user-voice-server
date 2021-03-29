@@ -2,9 +2,8 @@ package entreprisecorp.database;
 
 import java.sql.*;
 
-import entreprisecorp.restservices.models.User;
+import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.utils.HashUtils;
-import io.github.cdimascio.dotenv.Dotenv;
 
 public class UserDbHandler extends DbHandler{
 

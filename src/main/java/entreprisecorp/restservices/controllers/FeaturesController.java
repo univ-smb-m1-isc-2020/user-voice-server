@@ -2,25 +2,30 @@ package entreprisecorp.restservices.controllers;
 
 import com.google.gson.Gson;
 import entreprisecorp.App;
-import entreprisecorp.restservices.Response;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.ApiKey;
-import entreprisecorp.restservices.models.User;
-import entreprisecorp.restservices.models.features.FeatureAndTableName;
-import entreprisecorp.restservices.models.features.FeatureWithApiKey;
-import entreprisecorp.restservices.models.features.ListFeatures;
-import entreprisecorp.restservices.models.features.MatchFeatures;
+import entreprisecorp.restservices.models.admin.Admin;
+import entreprisecorp.restservices.models.admin.AdminRepository;
+import entreprisecorp.restservices.models.features.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.json.JsonObject;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class FeaturesController {
     private final AtomicLong counter = new AtomicLong();
+
+    private final AdminRepository repository;
+    private final FeatureRepository repositoryFeature;
+
+    public FeaturesController(AdminRepository repository, FeatureRepository featureRepository) {
+        this.repository = repository;
+        this.repositoryFeature = featureRepository;
+    }
+
 
     @PostMapping(
             path = "/getMatch",
@@ -41,16 +46,20 @@ public class FeaturesController {
     )
     public ResponseSuccess addFeature(@RequestBody FeatureWithApiKey featureWithApiKey){
 
-        String tableNameFromApiKey = App.adminDbHandler.getTableNameFromApiKey(featureWithApiKey.getApiKey());
-        boolean success = App.featuresDbHandler.CreateFeature(featureWithApiKey.getFeature(),tableNameFromApiKey);
-        if(success){
+
+        try{
+            Admin admin = repository.findByApiKey(featureWithApiKey.getApiKey());
+            featureWithApiKey.getFeature().setTableName(admin.getTableFeatures());
+            repositoryFeature.saveAndFlush(featureWithApiKey.getFeature());
             System.err.println("Feature Creation done!");
             Gson gson = new Gson();
             String featureJson = gson.toJson(featureWithApiKey.getFeature());
-            return new ResponseSuccess(counter.incrementAndGet(), featureJson, success);
-        } else {
+            return new ResponseSuccess(counter.incrementAndGet(), featureJson, true);
+
+        }
+        catch (Exception exception){
             System.err.println("Feature Creation failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "", success);
+            return new ResponseSuccess(counter.incrementAndGet(), "", false);
         }
 
     }
