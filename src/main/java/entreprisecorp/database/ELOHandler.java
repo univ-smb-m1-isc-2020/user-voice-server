@@ -5,7 +5,7 @@ import entreprisecorp.restservices.models.features.MatchFeatures;
 
 public class ELOHandler {
 
-    private final double KCoef = 20.0;
+    private final double KCoef = 50.0;
 
 
     public MatchFeatures calculateNewEloMatch(MatchFeatures matchFeatures){

@@ -4,7 +4,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.gson.Gson;
 
+import entreprisecorp.restservices.models.admin.Admin;
 import entreprisecorp.restservices.models.user.UserRepository;
+import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,11 +32,16 @@ public class RegisterController {
     )
     public ResponseSuccess register(@RequestBody User user)
     {
+        User createdUser = new User(user.getUsername(), user.getPassword(),user.getEmail());
+
+        createdUser.setSalt(HashUtils.getSalt(30));
+        createdUser.setPassword(HashUtils.generateSecurePassword(user.getPassword(), createdUser.getSalt()));
+
         try{
-            repository.saveAndFlush(user);
+            repository.saveAndFlush(createdUser);
             System.err.println("User registration done!");
             Gson gson = new Gson();
-            String userJson = gson.toJson(user);
+            String userJson = gson.toJson(createdUser);
             return new ResponseSuccess(counter.incrementAndGet(), userJson, true);
         }
         catch (Exception exception){

@@ -2,10 +2,12 @@ package entreprisecorp.restservices.models.features;
 
 import org.springframework.test.annotation.IfProfileValue;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@NamedQueries({
+        @NamedQuery(name="Feature.getTwoRandom",
+                query="select f from Feature f")
+})
 @Entity
 public class Feature {
 

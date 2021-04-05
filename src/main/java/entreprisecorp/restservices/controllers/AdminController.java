@@ -3,6 +3,7 @@ package entreprisecorp.restservices.controllers;
 import com.google.gson.Gson;
 import entreprisecorp.App;
 import entreprisecorp.restservices.models.admin.AdminRepository;
+import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.restservices.Response;
 import entreprisecorp.restservices.ResponseSuccess;
@@ -33,13 +34,13 @@ public class AdminController {
     )
     public Response login(@RequestBody Admin admin)
     {
-        Admin connectedAdmin = repository.findByEmailAndPassword(admin.getEmail(),admin.getPassword());
-        if(connectedAdmin != null){
+        Admin connectedAdmin = repository.findByEmail(admin.getEmail());
+        if(connectedAdmin != null && HashUtils.verifyUserPassword(admin.getPassword(), connectedAdmin.getPassword(), connectedAdmin.getSalt())){
             Gson gson = new Gson();
             String adminJson = gson.toJson(connectedAdmin);
             return new Response(counter.incrementAndGet(), adminJson);
         } else {
-            return new Response(counter.incrementAndGet(), "");
+            return new Response(counter.incrementAndGet(), "wrong password or email");
         }
     }
 
@@ -56,7 +57,7 @@ public class AdminController {
         createdAdmin.setPassword(HashUtils.generateSecurePassword(admin.getPassword(), createdAdmin.getSalt()));
 
         try{
-            repository.save(createdAdmin);
+            repository.saveAndFlush(createdAdmin);
             System.err.println("Admin registration done!");
             createdAdmin.setPassword(null);
             Gson gson = new Gson();

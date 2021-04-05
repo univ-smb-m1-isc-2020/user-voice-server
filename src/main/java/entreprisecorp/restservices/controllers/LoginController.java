@@ -42,7 +42,7 @@ public class LoginController {
             String userJson = gson.toJson(connectedUser);
             return new Response(counter.incrementAndGet(), userJson);
         } else {
-            return new Response(counter.incrementAndGet(), "");
+            return new Response(counter.incrementAndGet(), "wrong password or email");
         }
 
     }

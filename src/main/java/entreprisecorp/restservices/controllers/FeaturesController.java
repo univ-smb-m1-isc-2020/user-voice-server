@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
@@ -34,8 +39,21 @@ public class FeaturesController {
     )
     public MatchFeatures getMatchFeature(@RequestBody ApiKey apikey){
 
-        String tableNameFromApiKey = App.adminDbHandler.getTableNameFromApiKey(apikey.getApiKey());
-        return App.featuresDbHandler.getMatchFeature(tableNameFromApiKey);
+
+
+        String tableNameFromApiKey = repository.findByApiKey(apikey.getApiKey()).getTableFeatures();
+        List<Feature> features = repositoryFeature.findAllByTableName(tableNameFromApiKey);
+
+        Random rand = new Random();
+        Feature feature1 = features.get(rand.nextInt(features.size()));
+        Feature feature2;
+        do{
+            feature2 = features.get(rand.nextInt(features.size()));
+        }
+        while(feature1 == feature2);
+
+
+        return new MatchFeatures(feature1,feature2);
 
     }
 
@@ -45,7 +63,7 @@ public class FeaturesController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseSuccess addFeature(@RequestBody FeatureWithApiKey featureWithApiKey){
-
+        featureWithApiKey.getFeature().setELO(1000);
 
         try{
             Admin admin = repository.findByApiKey(featureWithApiKey.getApiKey());
@@ -71,7 +89,7 @@ public class FeaturesController {
     )
     public ListFeatures getFeaturesAuthor(@RequestBody FeatureAndTableName featureAndTableName){
 
-        ListFeatures listFeatures = App.featuresDbHandler.getFeatureByAuthor(featureAndTableName.getEmail(),featureAndTableName.getTableName());
+        ListFeatures listFeatures = new ListFeatures(repositoryFeature.findAllByAuthorEmailAndTableName(featureAndTableName.getEmail(),featureAndTableName.getTableName()));
         return listFeatures;
     }
 
@@ -82,7 +100,7 @@ public class FeaturesController {
     )
     public ListFeatures getFeaturesTable(@RequestBody FeatureAndTableName featureAndTableName){
 
-        ListFeatures listFeatures = App.featuresDbHandler.getFeatureByTable(featureAndTableName.getTableName());
+        ListFeatures listFeatures = new ListFeatures(repositoryFeature.findAllByTableName(featureAndTableName.getTableName()));
         return listFeatures;
     }
 
