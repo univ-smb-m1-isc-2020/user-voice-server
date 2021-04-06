@@ -1,15 +1,6 @@
 package entreprisecorp.restservices.controllers;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.google.gson.Gson;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import entreprisecorp.App;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.ApiKey;
 import entreprisecorp.restservices.models.admin.Admin;
@@ -20,9 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;

@@ -1,7 +1,5 @@
 package entreprisecorp.restservices.models.features;
 
-import org.springframework.test.annotation.IfProfileValue;
-
 import javax.persistence.*;
 
 @NamedQueries({

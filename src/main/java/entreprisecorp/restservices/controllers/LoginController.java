@@ -1,22 +1,15 @@
 package entreprisecorp.restservices.controllers;
 
 import com.google.gson.Gson;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.atomic.AtomicLong;
-
-import entreprisecorp.restservices.models.admin.AdminRepository;
+import entreprisecorp.restservices.Response;
+import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import entreprisecorp.App;
-import entreprisecorp.restservices.Response;
-import entreprisecorp.restservices.models.user.User;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class LoginController {

@@ -1,19 +1,15 @@
 package entreprisecorp.restservices.controllers;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.google.gson.Gson;
-
-import entreprisecorp.restservices.models.admin.Admin;
+import entreprisecorp.restservices.ResponseSuccess;
+import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import entreprisecorp.App;
-import entreprisecorp.restservices.ResponseSuccess;
-import entreprisecorp.restservices.models.user.User;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class RegisterController {
