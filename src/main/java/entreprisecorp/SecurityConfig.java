@@ -16,7 +16,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT", "OPTIONS","PATCH", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowCredentials(false);
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         
         http.authorizeRequests().antMatchers("/**").permitAll().anyRequest()
