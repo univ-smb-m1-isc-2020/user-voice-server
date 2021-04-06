@@ -3,6 +3,7 @@ package entreprisecorp.restservices.controllers;
 import com.google.gson.Gson;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.user.User;
+import entreprisecorp.restservices.models.user.UserFront;
 import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +27,12 @@ public class RegisterController {
         consumes = "application/json", 
         produces = "application/json"
     )
-    public ResponseSuccess register(@RequestBody User user)
+    public ResponseSuccess register(@RequestBody UserFront userfront)
     {
-        User createdUser = new User(user.getUsername(), user.getPassword(),user.getEmail());
+        User createdUser = new User(userfront.getUsername(), userfront.getPassword(),userfront.getEmail());
 
         createdUser.setSalt(HashUtils.getSalt(30));
-        createdUser.setPassword(HashUtils.generateSecurePassword(user.getPassword(), createdUser.getSalt()));
+        createdUser.setPassword(HashUtils.generateSecurePassword(userfront.getPassword(), createdUser.getSalt()));
 
         try{
             repository.saveAndFlush(createdUser);

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import entreprisecorp.restservices.Response;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.admin.Admin;
+import entreprisecorp.restservices.models.admin.AdminFront;
 import entreprisecorp.restservices.models.admin.AdminRepository;
 import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,10 +29,10 @@ public class AdminController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Response login(@RequestBody Admin admin)
+    public Response login(@RequestBody AdminFront adminfront)
     {
-        Admin connectedAdmin = repository.findByEmail(admin.getEmail());
-        if(connectedAdmin != null && HashUtils.verifyUserPassword(admin.getPassword(), connectedAdmin.getPassword(), connectedAdmin.getSalt())){
+        Admin connectedAdmin = repository.findByEmail(adminfront.getEmail());
+        if(connectedAdmin != null && HashUtils.verifyUserPassword(adminfront.getPassword(), connectedAdmin.getPassword(), connectedAdmin.getSalt())){
             Gson gson = new Gson();
             String adminJson = gson.toJson(connectedAdmin);
             return new Response(counter.incrementAndGet(), adminJson);
@@ -45,12 +46,12 @@ public class AdminController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseSuccess register(@RequestBody Admin admin)
+    public ResponseSuccess register(@RequestBody AdminFront adminFront)
     {
-        Admin createdAdmin = new Admin(admin.getCompany(), admin.getPassword(), admin.getEmail());
+        Admin createdAdmin = new Admin(adminFront.getCompany(), adminFront.getPassword(), adminFront.getEmail());
 
         createdAdmin.setSalt(HashUtils.getSalt(30));
-        createdAdmin.setPassword(HashUtils.generateSecurePassword(admin.getPassword(), createdAdmin.getSalt()));
+        createdAdmin.setPassword(HashUtils.generateSecurePassword(adminFront.getPassword(), createdAdmin.getSalt()));
 
         try{
             repository.saveAndFlush(createdAdmin);

@@ -3,6 +3,7 @@ package entreprisecorp.restservices.controllers;
 import com.google.gson.Gson;
 import entreprisecorp.restservices.Response;
 import entreprisecorp.restservices.models.user.User;
+import entreprisecorp.restservices.models.user.UserFront;
 import entreprisecorp.restservices.models.user.UserRepository;
 import entreprisecorp.utils.HashUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +28,11 @@ public class LoginController {
         consumes = "application/json", 
         produces = "application/json"
     )
-    public Response login(@RequestBody User user)
+    public Response login(@RequestBody UserFront userfront)
     {
-        User connectedUser = repository.findByEmail(user.getEmail());
-        if(connectedUser != null && HashUtils.verifyUserPassword(user.getPassword(), connectedUser.getPassword(), connectedUser.getSalt())){
+
+        User connectedUser = repository.findByEmail(userfront.getEmail());
+        if(connectedUser != null && HashUtils.verifyUserPassword(userfront.getPassword(), connectedUser.getPassword(), connectedUser.getSalt())){
             Gson gson = new Gson();
             String userJson = gson.toJson(connectedUser);
             return new Response(counter.incrementAndGet(), userJson);
