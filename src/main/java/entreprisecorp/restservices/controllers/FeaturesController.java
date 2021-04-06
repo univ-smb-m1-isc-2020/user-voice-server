@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,6 +22,7 @@ public class FeaturesController {
 
     private final AdminRepository repository;
     private final FeatureRepository repositoryFeature;
+    private Random rand = new SecureRandom();
 
     public FeaturesController(AdminRepository repository, FeatureRepository featureRepository) {
         this.repository = repository;
@@ -36,20 +38,24 @@ public class FeaturesController {
     public MatchFeatures getMatchFeature(@RequestBody ApiKey apikey){
 
 
+        try{
+            String tableNameFromApiKey = repository.findByApiKey(apikey.getApiKey()).getTableFeatures();
+            List<Feature> features = repositoryFeature.findAllByTableName(tableNameFromApiKey);
 
-        String tableNameFromApiKey = repository.findByApiKey(apikey.getApiKey()).getTableFeatures();
-        List<Feature> features = repositoryFeature.findAllByTableName(tableNameFromApiKey);
+            Feature feature1 = features.get(rand.nextInt(features.size()));
+            Feature feature2;
+            do{
+                feature2 = features.get(rand.nextInt(features.size()));
+            }
+            while(feature1 == feature2);
 
-        Random rand = new Random();
-        Feature feature1 = features.get(rand.nextInt(features.size()));
-        Feature feature2;
-        do{
-            feature2 = features.get(rand.nextInt(features.size()));
+
+            return new MatchFeatures(feature1,feature2);
+
         }
-        while(feature1 == feature2);
-
-
-        return new MatchFeatures(feature1,feature2);
+        catch (Exception e){
+            return new MatchFeatures(null,null);
+        }
 
     }
 
