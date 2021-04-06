@@ -1,0 +1,5 @@
+spring.datasource.url=jdbc:mariadb://89.87.13.28:3306/uservoicetest
+spring.datasource.username=root
+spring.datasource.password=uservoicesql
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update

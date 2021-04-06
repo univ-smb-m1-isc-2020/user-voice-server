@@ -12,14 +12,33 @@ import org.springframework.web.bind.annotation.RestController;
 import entreprisecorp.App;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.ApiKey;
-import entreprisecorp.restservices.models.features.FeatureAndTableName;
-import entreprisecorp.restservices.models.features.FeatureWithApiKey;
-import entreprisecorp.restservices.models.features.ListFeatures;
-import entreprisecorp.restservices.models.features.MatchFeatures;
+import entreprisecorp.restservices.models.admin.Admin;
+import entreprisecorp.restservices.models.admin.AdminRepository;
+import entreprisecorp.restservices.models.features.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class FeaturesController {
     private final AtomicLong counter = new AtomicLong();
+
+    private final AdminRepository repository;
+    private final FeatureRepository repositoryFeature;
+
+    public FeaturesController(AdminRepository repository, FeatureRepository featureRepository) {
+        this.repository = repository;
+        this.repositoryFeature = featureRepository;
+    }
+
 
     @PostMapping(
             path = "/getMatch",
@@ -28,8 +47,21 @@ public class FeaturesController {
     )
     public MatchFeatures getMatchFeature(@RequestBody ApiKey apikey){
 
-        String tableNameFromApiKey = App.adminDbHandler.getTableNameFromApiKey(apikey.getApiKey());
-        return App.featuresDbHandler.getMatchFeature(tableNameFromApiKey);
+
+
+        String tableNameFromApiKey = repository.findByApiKey(apikey.getApiKey()).getTableFeatures();
+        List<Feature> features = repositoryFeature.findAllByTableName(tableNameFromApiKey);
+
+        Random rand = new Random();
+        Feature feature1 = features.get(rand.nextInt(features.size()));
+        Feature feature2;
+        do{
+            feature2 = features.get(rand.nextInt(features.size()));
+        }
+        while(feature1 == feature2);
+
+
+        return new MatchFeatures(feature1,feature2);
 
     }
 
@@ -39,17 +71,21 @@ public class FeaturesController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseSuccess addFeature(@RequestBody FeatureWithApiKey featureWithApiKey){
+        featureWithApiKey.getFeature().setELO(1000);
 
-        String tableNameFromApiKey = App.adminDbHandler.getTableNameFromApiKey(featureWithApiKey.getApiKey());
-        boolean success = App.featuresDbHandler.CreateFeature(featureWithApiKey.getFeature(),tableNameFromApiKey);
-        if(success){
+        try{
+            Admin admin = repository.findByApiKey(featureWithApiKey.getApiKey());
+            featureWithApiKey.getFeature().setTableName(admin.getTableFeatures());
+            repositoryFeature.saveAndFlush(featureWithApiKey.getFeature());
             System.err.println("Feature Creation done!");
             Gson gson = new Gson();
             String featureJson = gson.toJson(featureWithApiKey.getFeature());
-            return new ResponseSuccess(counter.incrementAndGet(), featureJson, success);
-        } else {
+            return new ResponseSuccess(counter.incrementAndGet(), featureJson, true);
+
+        }
+        catch (Exception exception){
             System.err.println("Feature Creation failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "", success);
+            return new ResponseSuccess(counter.incrementAndGet(), "", false);
         }
 
     }
@@ -61,7 +97,7 @@ public class FeaturesController {
     )
     public ListFeatures getFeaturesAuthor(@RequestBody FeatureAndTableName featureAndTableName){
 
-        ListFeatures listFeatures = App.featuresDbHandler.getFeatureByAuthor(featureAndTableName.getEmail(),featureAndTableName.getTableName());
+        ListFeatures listFeatures = new ListFeatures(repositoryFeature.findAllByAuthorEmailAndTableName(featureAndTableName.getEmail(),featureAndTableName.getTableName()));
         return listFeatures;
     }
 
@@ -72,7 +108,7 @@ public class FeaturesController {
     )
     public ListFeatures getFeaturesTable(@RequestBody FeatureAndTableName featureAndTableName){
 
-        ListFeatures listFeatures = App.featuresDbHandler.getFeatureByTable(featureAndTableName.getTableName());
+        ListFeatures listFeatures = new ListFeatures(repositoryFeature.findAllByTableName(featureAndTableName.getTableName()));
         return listFeatures;
     }
 
