@@ -38,4 +38,8 @@ public class AdminFront {
         this.email = email;
     }
 
+    public AdminFront(String company, String email) {
+        this.company = company;
+        this.email = email;
+    }
 }

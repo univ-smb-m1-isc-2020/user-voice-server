@@ -2,6 +2,7 @@ package entreprisecorp.restservices.controllers;
 
 import com.google.gson.Gson;
 import entreprisecorp.restservices.Response;
+import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.restservices.models.user.UserFront;
 import entreprisecorp.restservices.models.user.UserRepository;
@@ -28,16 +29,17 @@ public class LoginController {
         consumes = "application/json", 
         produces = "application/json"
     )
-    public Response login(@RequestBody UserFront userfront)
+    public ResponseSuccess login(@RequestBody UserFront userfront)
     {
 
         User connectedUser = repository.findByEmail(userfront.getEmail());
         if(connectedUser != null && HashUtils.verifyUserPassword(userfront.getPassword(), connectedUser.getPassword(), connectedUser.getSalt())){
             Gson gson = new Gson();
-            String userJson = gson.toJson(connectedUser);
-            return new Response(counter.incrementAndGet(), userJson);
+            UserFront userFrontReturn = new UserFront(userfront.getUsername(), userfront.getEmail());
+            String userJson = gson.toJson(userFrontReturn);
+            return new ResponseSuccess(counter.incrementAndGet(), userJson, true);
         } else {
-            return new Response(counter.incrementAndGet(), "wrong password or email");
+            return new ResponseSuccess(counter.incrementAndGet(), "", false);
         }
 
     }

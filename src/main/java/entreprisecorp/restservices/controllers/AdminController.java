@@ -29,15 +29,17 @@ public class AdminController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Response login(@RequestBody AdminFront adminfront)
+    public ResponseSuccess login(@RequestBody AdminFront adminfront)
     {
         Admin connectedAdmin = repository.findByEmail(adminfront.getEmail());
         if(connectedAdmin != null && HashUtils.verifyUserPassword(adminfront.getPassword(), connectedAdmin.getPassword(), connectedAdmin.getSalt())){
             Gson gson = new Gson();
-            String adminJson = gson.toJson(connectedAdmin);
-            return new Response(counter.incrementAndGet(), adminJson);
+
+            AdminFront adminFrontReturn = new AdminFront(connectedAdmin.getCompany(), connectedAdmin.getEmail());
+            String adminJson = gson.toJson(adminFrontReturn);
+            return new ResponseSuccess(counter.incrementAndGet(), adminJson, true);
         } else {
-            return new Response(counter.incrementAndGet(), "wrong password or email");
+            return new ResponseSuccess(counter.incrementAndGet(), "error username or password", false);
         }
     }
 

@@ -20,6 +20,11 @@ public class UserFront {
         this.email = email;
     }
 
+    public UserFront(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+
     public UserFront() {
     }
 
