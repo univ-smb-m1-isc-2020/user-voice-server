@@ -1,60 +1,55 @@
 package entreprisecorp.restservices.models.features;
 
+import entreprisecorp.restservices.models.apikeys.WebSite;
+
 import javax.persistence.*;
 
-@NamedQueries({
-        @NamedQuery(name="Feature.getTwoRandom",
-                query="select f from Feature f")
-})
 @Entity
 public class Feature {
 
     @Id
     @GeneratedValue
-    private int id;
-    private String textFeature;
-    private int ELO = 0;
-    private String authorEmail;
+    private Long id;
+
+    private String text;
+
+    private String emailAuthor;
+
+    private int ELO;
+
+
+    @Transient
     private boolean won;
-    private String tableName;
 
-    public Feature(int id, String textFeature, int ELO,String authorEmail) {
-        this.id = id;
-        this.textFeature = textFeature;
-        this.ELO = ELO;
-        this.authorEmail = authorEmail;
-    }
-
-
-
-    public Feature(String textFeature, int ELO,String authorEmail) {
-        this.textFeature = textFeature;
-        this.ELO = ELO;
-        this.authorEmail = authorEmail;
-    }
-
-    public Feature(String textFeature, String authorEmail) {
-        this.textFeature = textFeature;
-        this.authorEmail = authorEmail;
-    }
+    @ManyToOne
+    private WebSite webSite;
 
     public Feature() {
     }
 
-    public int getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getTextFeature() {
-        return textFeature;
+    public String getText() {
+        return text;
     }
 
-    public void setTextFeature(String textFeature) {
-        this.textFeature = textFeature;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getEmailAuthor() {
+        return emailAuthor;
+    }
+
+    public void setEmailAuthor(String emailAuthor) {
+        this.emailAuthor = emailAuthor;
     }
 
     public int getELO() {
@@ -65,16 +60,6 @@ public class Feature {
         this.ELO = ELO;
     }
 
-
-
-    public String getAuthorEmail() {
-        return authorEmail;
-    }
-
-    public void setAuthorEmail(String authorEmail) {
-        this.authorEmail = authorEmail;
-    }
-
     public boolean isWon() {
         return won;
     }
@@ -83,21 +68,23 @@ public class Feature {
         this.won = won;
     }
 
-    public String getTableName() {
-        return tableName;
+    public WebSite getWebSite() {
+        return webSite;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setWebSite(WebSite webSite) {
+        this.webSite = webSite;
     }
 
     @Override
     public String toString() {
         return "Feature{" +
                 "id=" + id +
-                ", textFeature='" + textFeature + '\'' +
+                ", text='" + text + '\'' +
+                ", emailAuthor='" + emailAuthor + '\'' +
                 ", ELO=" + ELO +
-                ", authorEmail='" + authorEmail + '\'' +
+                ", won=" + won +
+                ", webSite=" + webSite +
                 '}';
     }
 }
