@@ -5,11 +5,6 @@ public class FeatureWithApiKey {
     private String apiKey;
     private Feature feature;
 
-    public FeatureWithApiKey(String apiKey, Feature feature) {
-        this.apiKey = apiKey;
-        this.feature = feature;
-    }
-
     public FeatureWithApiKey() {
     }
 

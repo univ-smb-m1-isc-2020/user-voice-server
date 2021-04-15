@@ -1,15 +1,8 @@
-package entreprisecorp.restservices.models;
+package entreprisecorp.restservices.models.apikeys;
 
 public class ApiKey {
 
     private String apiKey;
-
-    public ApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public ApiKey() {
-    }
 
     public String getApiKey() {
         return apiKey;
@@ -17,5 +10,8 @@ public class ApiKey {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public ApiKey() {
     }
 }

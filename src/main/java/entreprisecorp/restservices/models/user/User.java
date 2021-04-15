@@ -2,27 +2,33 @@ package entreprisecorp.restservices.models.user;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
     private String username;
-    private String password;
     private String email;
-    private String salt;
+    private String password;
 
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
-    public Long getId() {
+    protected User() {}
+
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -34,14 +40,6 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -50,19 +48,20 @@ public class User {
         this.email = email;
     }
 
-    public String getSalt() {
-        return salt;
+    public String getPassword() {
+        return password;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
-    protected User() {}
-
-    public User(String username, String password, String email) {
-        this.username = username;
+    public void setPassword(String password) {
         this.password = password;
-        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

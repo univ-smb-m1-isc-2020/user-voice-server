@@ -1,4 +1,4 @@
-package entreprisecorp.database;
+package entreprisecorp.utils;
 
 import entreprisecorp.restservices.models.features.Feature;
 import entreprisecorp.restservices.models.features.MatchFeatures;
