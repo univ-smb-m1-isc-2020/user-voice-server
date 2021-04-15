@@ -27,6 +27,7 @@ public class Feature {
     public Feature() {
     }
 
+
     public Long getId() {
         return id;
     }

@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,6 +34,9 @@ public class FeatureController {
 
     @Autowired
     private FeatureRepository featureRepository;
+
+    @Autowired
+    private VoteForFeatureRepository voteForFeatureRepository;
 
     public ELOHandler eloHandler = new ELOHandler();
 
@@ -119,6 +124,86 @@ public class FeatureController {
         catch (Exception e){
             System.err.println("Feature Updates failed!");
             return new ResponseSuccess(counter.incrementAndGet(), "", false);
+        }
+
+
+    }
+
+
+    @PostMapping(
+            path = "/features/voteForFeature",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE    )
+    public ResponseSuccess voteForFeature(@RequestBody Feature feature){
+
+        UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = principal.getUser();
+
+        try{
+            LocalDate date = LocalDate.now();
+            LocalDate dateYesterday = date.minusDays(1);
+            int numberVoteToday = 0;
+            boolean isAlreadyVoted = false;
+            String json = "";
+
+            ArrayList<VoteForFeature> voteForFeatures = voteForFeatureRepository.findAllByUser(user);
+
+
+            for (VoteForFeature voteForFeature: voteForFeatures) {
+                if(voteForFeature.getDate().isAfter(dateYesterday)){
+                    numberVoteToday++;
+                    if(voteForFeature.getFeature().getId() == feature.getId()){
+                        isAlreadyVoted = true;
+                    }
+                }
+            }
+            if(numberVoteToday < 10 && !isAlreadyVoted){
+                feature.setELO(feature.getELO() + 20);
+                featureRepository.save(feature);
+
+                VoteForFeature voteForFeature = new VoteForFeature(feature,user,date);
+                voteForFeatureRepository.saveAndFlush(voteForFeature);
+                json = voteForFeature.toString();
+
+                System.err.println("Feature Updates done! " + numberVoteToday);
+            }
+            else if(isAlreadyVoted){
+                json = "AlreadyVoted";
+            }
+            else{
+                json = "Too much vote";
+            }
+            return new ResponseSuccess(counter.incrementAndGet(), json, true);
+        }
+        catch (Exception e){
+            System.err.println("Feature Updates failed!");
+            return new ResponseSuccess(counter.incrementAndGet(), "too much vote", false);
+        }
+
+
+    }
+
+    @PostMapping( path = "/features/getNumberVoteToday")
+    public ResponseSuccess getNumberVoteToday(){
+
+        UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = principal.getUser();
+
+        try{
+            LocalDate date = LocalDate.now();
+            LocalDate dateYesterday = date.minusDays(1);
+            int numberVoteToday = 0;
+            ArrayList<VoteForFeature> voteForFeatures = voteForFeatureRepository.findAllByUser(user);
+            for (VoteForFeature voteForFeature: voteForFeatures) {
+                if(voteForFeature.getDate().isAfter(dateYesterday)){
+                    numberVoteToday++;
+                }
+            }
+            return new ResponseSuccess(counter.incrementAndGet(), String.valueOf(numberVoteToday), true);
+        }
+        catch (Exception e){
+            System.err.println("Cant get result!");
+            return new ResponseSuccess(counter.incrementAndGet(), "error getting result", false);
         }
 
 
