@@ -78,7 +78,7 @@ public class Feature {
 
     @Override
     public String toString() {
-        return "Feature{" +
+        return "{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
                 ", emailAuthor='" + emailAuthor + '\'' +

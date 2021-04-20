@@ -54,7 +54,7 @@ public class WebSite {
 
     @Override
     public String toString() {
-        return "WebSite{" +
+        return "{" +
                 "id=" + id +
                 ", nameSite='" + nameSite + '\'' +
                 ", apiKey='" + apiKey + '\'' +

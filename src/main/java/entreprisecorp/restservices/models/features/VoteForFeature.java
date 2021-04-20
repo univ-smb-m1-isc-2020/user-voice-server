@@ -67,7 +67,7 @@ public class VoteForFeature {
 
     @Override
     public String toString() {
-        return "VoteForFeature{" +
+        return "{" +
                 "id=" + id +
                 ", feature=" + feature +
                 ", user=" + user +

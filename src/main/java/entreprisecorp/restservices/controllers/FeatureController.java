@@ -152,7 +152,7 @@ public class FeatureController {
             for (VoteForFeature voteForFeature: voteForFeatures) {
                 if(voteForFeature.getDate().isAfter(dateYesterday)){
                     numberVoteToday++;
-                    if(voteForFeature.getFeature().getId() == feature.getId()){
+                    if(voteForFeature.getFeature().getId().equals(feature.getId())){
                         isAlreadyVoted = true;
                     }
                 }
