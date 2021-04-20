@@ -1,6 +1,9 @@
 package entreprisecorp;
 
 import entreprisecorp.restservices.models.user.UserPrincipalDetailsService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -25,21 +29,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/login").authenticated()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/features/create").permitAll()
-                .antMatchers("/features/getMatch").permitAll()
-                .antMatchers("/features/returnResultMatch").permitAll()
-                .antMatchers("/**").authenticated()
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT", "OPTIONS", "PATCH", "DELETE"));
+        corsConfiguration.setAllowCredentials(false);
+        corsConfiguration.setExposedHeaders(List.of("Authorization"));
 
-                .and()
-                .httpBasic()
-                .and()
-                .csrf().disable()
-                .formLogin().disable();
+        http.authorizeRequests()
+            .antMatchers("/login").authenticated()
+            .antMatchers("/register").permitAll()
+            .antMatchers("/features/create").permitAll()
+            .antMatchers("/features/getMatch").permitAll()
+            .antMatchers("/features/returnResultMatch").permitAll()
+            .antMatchers("/**").authenticated()
 
+            .and()
+            .httpBasic()
+            .and()
+            .csrf().disable()
+            .formLogin().disable()
+            .cors().configurationSource(request -> corsConfiguration);
     }
 
     @Bean
