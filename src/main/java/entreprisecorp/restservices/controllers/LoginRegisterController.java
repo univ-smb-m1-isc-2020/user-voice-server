@@ -1,5 +1,6 @@
 package entreprisecorp.restservices.controllers;
 
+import com.google.gson.Gson;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.user.User;
 import entreprisecorp.restservices.models.user.UserPrincipal;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class LoginRegisterController {
     private final AtomicLong counter = new AtomicLong();
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    Gson gson = new Gson();
 
     @Autowired
     private UserRepository userRepository;
@@ -27,8 +29,8 @@ public class LoginRegisterController {
     )
     public ResponseSuccess login(){
         UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        return new ResponseSuccess(counter.incrementAndGet(),principal.getUser().toString(), true);
+        String response = gson.toJson(principal);
+        return new ResponseSuccess(counter.incrementAndGet(),response, true);
     }
 
 

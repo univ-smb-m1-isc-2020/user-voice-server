@@ -1,5 +1,6 @@
 package entreprisecorp.restservices.controllers;
 
+import com.google.gson.Gson;
 import entreprisecorp.restservices.ResponseSuccess;
 import entreprisecorp.restservices.models.apikeys.WebSite;
 import entreprisecorp.restservices.models.apikeys.WebSiteRepository;
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 public class WebSiteController {
     private final AtomicLong counter = new AtomicLong();
-
+    Gson gson = new Gson();
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -39,7 +40,8 @@ public class WebSiteController {
 
         try{
             webSiteRepository.saveAndFlush(webSite);
-            return new ResponseSuccess(counter.incrementAndGet(), webSite.toString(), true);
+            String response = gson.toJson(webSite);
+            return new ResponseSuccess(counter.incrementAndGet(),response, true);
         }
         catch (Exception exception){
             return new ResponseSuccess(counter.incrementAndGet(), "register website failed", false);
@@ -59,7 +61,8 @@ public class WebSiteController {
 
         try{
             ArrayList<WebSite> websites = webSiteRepository.findAllByOwner(user);
-            return new ResponseSuccess(counter.incrementAndGet(), websites.toString(), true);
+            String response = gson.toJson(websites);
+            return new ResponseSuccess(counter.incrementAndGet(),response, true);
         }
         catch (Exception exception){
             return new ResponseSuccess(counter.incrementAndGet(), "no websites", false);

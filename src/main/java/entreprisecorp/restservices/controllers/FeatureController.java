@@ -35,6 +35,8 @@ public class FeatureController {
     @Autowired
     private FeatureRepository featureRepository;
 
+    Gson gson = new Gson();
+
     @Autowired
     private VoteForFeatureRepository voteForFeatureRepository;
 
@@ -55,7 +57,8 @@ public class FeatureController {
 
         try{
             featureRepository.saveAndFlush(feature);
-            return new ResponseSuccess(counter.incrementAndGet(), feature.toString(), true);
+            String response = gson.toJson(feature);
+            return new ResponseSuccess(counter.incrementAndGet(), response, true);
         }
         catch (Exception exception){
             return new ResponseSuccess(counter.incrementAndGet(), "register feature failed", false);
@@ -73,7 +76,8 @@ public class FeatureController {
         try{
             WebSite webSite = webSiteRepository.findByApiKey(apiKey.getApiKey());
             ArrayList<Feature> features = featureRepository.findAllByWebSite(webSite);
-            return new ResponseSuccess(counter.incrementAndGet(), features.toString(), true);
+            String response = gson.toJson(features);
+            return new ResponseSuccess(counter.incrementAndGet(), response, true);
         }
         catch (Exception exception){
             return new ResponseSuccess(counter.incrementAndGet(), "no features", false);
@@ -117,7 +121,6 @@ public class FeatureController {
             featureRepository.save(matchFeatures.getFeature2());
             featureRepository.save(matchFeatures.getFeature1());
             System.err.println("Feature Updates done!");
-            Gson gson = new Gson();
             String featureJson = gson.toJson(matchFeatures);
             return new ResponseSuccess(counter.incrementAndGet(), featureJson, true);
         }
@@ -163,7 +166,7 @@ public class FeatureController {
 
                 VoteForFeature voteForFeature = new VoteForFeature(feature,user,date);
                 voteForFeatureRepository.saveAndFlush(voteForFeature);
-                json = voteForFeature.toString();
+                json = gson.toJson(voteForFeature);
 
                 System.err.println("Feature Updates done! " + numberVoteToday);
             }
@@ -199,7 +202,8 @@ public class FeatureController {
                     numberVoteToday++;
                 }
             }
-            return new ResponseSuccess(counter.incrementAndGet(), String.valueOf(numberVoteToday), true);
+            String response = gson.toJson(numberVoteToday);
+            return new ResponseSuccess(counter.incrementAndGet(), response, true);
         }
         catch (Exception e){
             System.err.println("Cant get result!");
