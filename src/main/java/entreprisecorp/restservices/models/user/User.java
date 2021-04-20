@@ -1,11 +1,9 @@
 package entreprisecorp.restservices.models.user;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "userz")
 public class User {
 
     @Id
