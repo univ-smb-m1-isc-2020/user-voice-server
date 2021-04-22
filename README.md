@@ -254,6 +254,60 @@ Response :
 }
 ```
 
+`Vote for a feature:`
+
+url : localhost:8080/features/voteForFeature
+NEED AUTHENTICATION
+
+requestedJson: 
+(id feature)
+```json
+{
+  "id": 33
+}
+```
+Response :
+(if already voted)
+```json
+{
+  "id": 3,
+  "content": "AlreadyVoted",
+  "sucess": true
+}
+```
+(if voted too much)
+```json
+{
+  "id": 3,
+  "content": "Too much vote",
+  "sucess": true
+}
+```
+(if Succeed) need fix !
+```json
+{
+  "id": 4,
+  "content": "fail vote",
+  "sucess": false
+}
+```
+
+
+`Get number of vote today for the user:`
+
+url : localhost:8080/features/getNumberVoteToday
+NEED AUTHENTICATION
+
+Response :
+(if already voted)
+```json
+{
+  "id": 3,
+  "content": 1,
+  "sucess": true
+}
+```
+
 
 
 

@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -137,10 +138,12 @@ public class FeatureController {
             path = "/features/voteForFeature",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE    )
-    public ResponseSuccess voteForFeature(@RequestBody Feature feature){
+    public ResponseSuccess voteForFeature(@RequestBody Feature featureFront){
 
         UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = principal.getUser();
+
+        Optional<Feature> feature = featureRepository.findById(featureFront.getId());
 
         try{
             LocalDate date = LocalDate.now();
@@ -155,16 +158,16 @@ public class FeatureController {
             for (VoteForFeature voteForFeature: voteForFeatures) {
                 if(voteForFeature.getDate().isAfter(dateYesterday)){
                     numberVoteToday++;
-                    if(voteForFeature.getFeature().getId().equals(feature.getId())){
+                    if(voteForFeature.getFeature().getId().equals(feature.get().getId())){
                         isAlreadyVoted = true;
                     }
                 }
             }
             if(numberVoteToday < 10 && !isAlreadyVoted){
-                feature.setELO(feature.getELO() + 20);
-                featureRepository.save(feature);
+                feature.get().setELO(feature.get().getELO() + 20);
+                featureRepository.save(feature.get());
 
-                VoteForFeature voteForFeature = new VoteForFeature(feature,user,date);
+                VoteForFeature voteForFeature = new VoteForFeature(feature.get(),user,date);
                 voteForFeatureRepository.saveAndFlush(voteForFeature);
                 json = gson.toJson(voteForFeature);
 
@@ -180,7 +183,7 @@ public class FeatureController {
         }
         catch (Exception e){
             System.err.println("Feature Updates failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "too much vote", false);
+            return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
         }
 
 
