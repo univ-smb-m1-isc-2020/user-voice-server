@@ -42,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             .antMatchers("/features/create").permitAll()
             .antMatchers("/features/getMatch").permitAll()
             .antMatchers("/features/returnResultMatch").permitAll()
+            .antMatchers("/website").permitAll()
+            .antMatchers("/website/**").permitAll()
             .antMatchers("/**").authenticated()
 
             .and()
