@@ -16,7 +16,6 @@ public class App implements WebMvcConfigurer {
           .addResourceHandler("/website/**")
           .addResourceLocations("classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/");
     }
-
 	
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);

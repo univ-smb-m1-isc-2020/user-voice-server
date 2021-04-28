@@ -172,6 +172,7 @@ public class FeatureController {
                 int numberVoteToday = 0;
                 boolean isAlreadyVoted = false;
                 String response = "";
+                boolean success = false;
 
                 ArrayList<VoteForFeature> voteForFeatures = voteForFeatureRepository.findAllByUser(user);
 
@@ -193,23 +194,24 @@ public class FeatureController {
                     voteForFeatureRepository.saveAndFlush(voteForFeature);
 
                     response = "Vote succeed";
+                    success = true;
                     System.err.println("Feature Updates done! " + numberVoteToday);
                 }
                 else if(isAlreadyVoted){
-                    response = "AlreadyVoted";
+                    response = "You have already voted for this feature.";
                 }
                 else{
-                    response = "Too much vote";
+                    response = "You have no votes left for today.";
                 }
-                return new ResponseSuccess(counter.incrementAndGet(), response, true);
+                return new ResponseSuccess(counter.incrementAndGet(), response, success);
             }
             catch (Exception e){
                 System.err.println("Feature Updates failed!");
-                return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
+                return new ResponseSuccess(counter.incrementAndGet(), "Unknown issue durin vote", false);
             }
 
         }
-        return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
+        return new ResponseSuccess(counter.incrementAndGet(), "Unknown issue durin vote", false);
 
 
     }
