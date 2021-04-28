@@ -1,0 +1,3 @@
+[submodule "src/main/resources/static/website"]
+	path = src/main/resources/static/website
+	url = https://github.com/univ-smb-m1-isc-2020/user-voice-admin.git
