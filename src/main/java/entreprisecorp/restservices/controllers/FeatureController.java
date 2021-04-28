@@ -50,20 +50,24 @@ public class FeatureController {
             produces = "application/json"
     )
     public ResponseSuccess createFeature(@RequestBody FeatureWithApiKey featureWithApiKey){
+        Optional<WebSite> webSite = webSiteRepository.findByApiKey(featureWithApiKey.getApiKey());
 
+        if(webSite.isPresent()){
+            Feature feature = featureWithApiKey.getFeature();
+            feature.setELO(1000);
+            feature.setWebSite(webSite.get());
 
-        Feature feature = featureWithApiKey.getFeature();
-        feature.setELO(1000);
-        feature.setWebSite(webSiteRepository.findByApiKey(featureWithApiKey.getApiKey()));
+            try{
+                featureRepository.saveAndFlush(feature);
+                String response = gson.toJson(feature);
+                return new ResponseSuccess(counter.incrementAndGet(), response, true);
+            }
+            catch (Exception exception){
+                return new ResponseSuccess(counter.incrementAndGet(), "register feature failed", false);
+            }
 
-        try{
-            featureRepository.saveAndFlush(feature);
-            String response = gson.toJson(feature);
-            return new ResponseSuccess(counter.incrementAndGet(), response, true);
         }
-        catch (Exception exception){
-            return new ResponseSuccess(counter.incrementAndGet(), "register feature failed", false);
-        }
+        return new ResponseSuccess(counter.incrementAndGet(), "wrong api key", false);
 
 
     }
@@ -75,10 +79,16 @@ public class FeatureController {
     )
     public ResponseSuccess GetAllFeatureWebsite(@RequestBody ApiKey apiKey){
         try{
-            WebSite webSite = webSiteRepository.findByApiKey(apiKey.getApiKey());
-            ArrayList<Feature> features = featureRepository.findAllByWebSite(webSite);
-            String response = gson.toJson(features);
-            return new ResponseSuccess(counter.incrementAndGet(), response, true);
+            Optional<WebSite> webSite = webSiteRepository.findByApiKey(apiKey.getApiKey());
+            if(webSite.isPresent()){
+                ArrayList<Feature> features = featureRepository.findAllByWebSite(webSite.get());
+                String response = gson.toJson(features);
+                return new ResponseSuccess(counter.incrementAndGet(), response, true);
+
+            }
+            else{
+                return new ResponseSuccess(counter.incrementAndGet(), "Wrong API KEY", false);
+            }
         }
         catch (Exception exception){
             return new ResponseSuccess(counter.incrementAndGet(), "no features", false);
@@ -90,22 +100,33 @@ public class FeatureController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public MatchFeatures GetMatch(@RequestBody ApiKey apiKey){
+    public String GetMatch(@RequestBody ApiKey apiKey){
         try{
-            WebSite webSite = webSiteRepository.findByApiKey(apiKey.getApiKey());
-            ArrayList<Feature> features = featureRepository.findAllByWebSite(webSite);
+            Optional<WebSite> webSite = webSiteRepository.findByApiKey(apiKey.getApiKey());
+            if(webSite.isPresent()){
+                ArrayList<Feature> features = featureRepository.findAllByWebSite(webSite.get());
+                if(features.size() < 2){
+                    return "not enough features";
+                }
+                Feature feature1 = features.get(rand.nextInt(features.size()));
+                Feature feature2;
+                do{
+                    feature2 = features.get(rand.nextInt(features.size()));
+                }
+                while(feature1 == feature2);
 
-            Feature feature1 = features.get(rand.nextInt(features.size()));
-            Feature feature2;
-            do{
-                feature2 = features.get(rand.nextInt(features.size()));
+                String response = gson.toJson(new MatchFeatures(feature1,feature2));
+
+                return response;
+
             }
-            while(feature1 == feature2);
+            else{
+                return "wrong API KEY";
+            }
 
-            return new MatchFeatures(feature1,feature2);
         }
         catch (Exception exception){
-            return null;
+            return "error";
         }
     }
 
@@ -144,47 +165,51 @@ public class FeatureController {
         User user = principal.getUser();
 
         Optional<Feature> feature = featureRepository.findById(featureFront.getId());
+        if(feature.isPresent()){
+            try{
+                LocalDate date = LocalDate.now();
+                LocalDate dateYesterday = date.minusDays(1);
+                int numberVoteToday = 0;
+                boolean isAlreadyVoted = false;
+                String response = "";
 
-        try{
-            LocalDate date = LocalDate.now();
-            LocalDate dateYesterday = date.minusDays(1);
-            int numberVoteToday = 0;
-            boolean isAlreadyVoted = false;
-            String json = "";
-
-            ArrayList<VoteForFeature> voteForFeatures = voteForFeatureRepository.findAllByUser(user);
+                ArrayList<VoteForFeature> voteForFeatures = voteForFeatureRepository.findAllByUser(user);
 
 
-            for (VoteForFeature voteForFeature: voteForFeatures) {
-                if(voteForFeature.getDate().isAfter(dateYesterday)){
-                    numberVoteToday++;
-                    if(voteForFeature.getFeature().getId().equals(feature.get().getId())){
-                        isAlreadyVoted = true;
+                for (VoteForFeature voteForFeature: voteForFeatures) {
+                    if(voteForFeature.getDate().isAfter(dateYesterday)){
+                        numberVoteToday++;
+                        if(voteForFeature.getFeature().getId().equals(feature.get().getId())){
+                            isAlreadyVoted = true;
+                        }
                     }
                 }
-            }
-            if(numberVoteToday < 10 && !isAlreadyVoted){
-                feature.get().setELO(feature.get().getELO() + 20);
-                featureRepository.save(feature.get());
 
-                VoteForFeature voteForFeature = new VoteForFeature(feature.get(),user,date);
-                voteForFeatureRepository.saveAndFlush(voteForFeature);
-                json = gson.toJson(voteForFeature);
+                if(numberVoteToday < 10 && !isAlreadyVoted){
+                    feature.get().setELO(feature.get().getELO() + 20);
+                    featureRepository.save(feature.get());
 
-                System.err.println("Feature Updates done! " + numberVoteToday);
+                    VoteForFeature voteForFeature = new VoteForFeature(feature.get(),user,date);
+                    voteForFeatureRepository.saveAndFlush(voteForFeature);
+
+                    response = "Vote succeed";
+                    System.err.println("Feature Updates done! " + numberVoteToday);
+                }
+                else if(isAlreadyVoted){
+                    response = "AlreadyVoted";
+                }
+                else{
+                    response = "Too much vote";
+                }
+                return new ResponseSuccess(counter.incrementAndGet(), response, true);
             }
-            else if(isAlreadyVoted){
-                json = "AlreadyVoted";
+            catch (Exception e){
+                System.err.println("Feature Updates failed!");
+                return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
             }
-            else{
-                json = "Too much vote";
-            }
-            return new ResponseSuccess(counter.incrementAndGet(), json, true);
+
         }
-        catch (Exception e){
-            System.err.println("Feature Updates failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
-        }
+        return new ResponseSuccess(counter.incrementAndGet(), "fail vote", false);
 
 
     }
