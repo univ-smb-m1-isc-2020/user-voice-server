@@ -41,15 +41,21 @@ public class LoginRegisterController {
     )
     public ResponseSuccess register(@RequestBody User user)
     {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if(userRepository.findByEmail(user.getEmail()).isEmpty()){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        try{
-            userRepository.saveAndFlush(user);
-            return new ResponseSuccess(counter.incrementAndGet(), "register succeed", true);
+            try{
+                userRepository.saveAndFlush(user);
+                return new ResponseSuccess(counter.incrementAndGet(), "register succeed", true);
+            }
+            catch (Exception exception){
+                System.err.println("Admin registration failed!");
+                return new ResponseSuccess(counter.incrementAndGet(), "register fail", false);
+            }
+
         }
-        catch (Exception exception){
-            System.err.println("Admin registration failed!");
-            return new ResponseSuccess(counter.incrementAndGet(), "register fail", false);
+        else{
+            return new ResponseSuccess(counter.incrementAndGet(), "user already existing", false);
         }
     }
 }
